@@ -15,7 +15,7 @@ const (
 	waitToOrder
 	waitToServe
 )
-const timeUnit = 50
+const timeUnit = 50 * time.Millisecond
 
 // mutex to control when the table can generate order?
 type table struct {
@@ -29,7 +29,7 @@ var ordersChannel = make(chan int, len(tables))
 
 func (t *table) makeOrder() {
 	//t.lock.Lock() //unlock will be called when the order is served
-	time.Sleep(timeUnit * time.Millisecond)
+	time.Sleep(timeUnit * time.Duration(rand.Intn(2)+2))
 	t.state = waitToOrder
 	t.clientOrder = newOrder()
 	ordersChannel <- t.id //?

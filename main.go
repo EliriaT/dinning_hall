@@ -17,19 +17,29 @@ func serveOrder(c *gin.Context) {
 	var cookedOrder receivedOrd
 	if err := c.BindJSON(&cookedOrder); err != nil {
 		log.Printf(err.Error())
+		return
 	}
-	tables[cookedOrder.TableId].state = free
-	tables[cookedOrder.TableId].clientOrder = order{}
-	tables[cookedOrder.TableId].lock.Unlock()
 
-	log.Printf("Order with ID %d, was served", cookedOrder.OrderId)
+	//waiters[cookedOrder.WaiterId-1].ordersChan <- cookedOrder.TableId
+
+	// i can use the waiter using lock, but it is not fastest way because it does not ensure that
+	//as soon as possible, immediately, the waiter will serve
+
+	waiters[cookedOrder.WaiterId-1].lock.Lock()
+	log.Printf("Order with ID %d, was served by waiter %d. Details: %+v", cookedOrder.OrderId, cookedOrder.WaiterId, cookedOrder)
+	tables[cookedOrder.TableId-1].state = free
+	tables[cookedOrder.TableId-1].clientOrder = order{}
+	waiters[cookedOrder.WaiterId-1].lock.Unlock()
+
 	c.IndentedJSON(http.StatusCreated, cookedOrder)
+	//tables[cookedOrder.TableId].lock.Unlock()
 }
 
 func main() {
 	//wg := new(sync.WaitGroup)
 	//wg.Add(1)
 	rand.Seed(time.Now().UnixNano())
+	aiOrder.SetId(1)
 	Init()
 	//wg.Wait()
 	router := gin.Default()

@@ -16,6 +16,10 @@ type autoInc struct {
 	id         int
 }
 
+func (a *autoInc) SetId(id int) {
+	a.id = id
+}
+
 func (a *autoInc) ID() (id int) {
 	a.Lock()
 	defer a.Unlock()
