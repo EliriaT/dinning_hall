@@ -46,7 +46,7 @@ func (w *waiter) LookUpOrders() {
 
 }
 
-//function to take table's order and prepare it for sending to kitchen
+// function to take table's order and prepare it for sending to kitchen
 func (w *waiter) takeOrder(tableId int) {
 	var table = Tables[tableId-1]
 	var ord = sentOrd{
@@ -61,14 +61,14 @@ func (w *waiter) takeOrder(tableId int) {
 	w.takenOrder = ord
 }
 
-//function to send the order to kitchen using Post request
+// function to send the order to kitchen using Post request
 func (w *waiter) sendOrder() {
 	reqBody, err := json.Marshal(w.takenOrder)
 	if err != nil {
 		log.Printf(err.Error())
 		return
 	}
-	resp, err := http.Post("http://localhost:8080/order", "application/json", bytes.NewBuffer(reqBody))
+	resp, err := http.Post("http://kitchen:8080/order", "application/json", bytes.NewBuffer(reqBody))
 	if err != nil {
 		log.Printf("Request Failed: %s", err.Error())
 		return
@@ -81,7 +81,7 @@ func (w *waiter) sendOrder() {
 	//}
 	//bodyString := string(body)
 	//log.Print(bodyString)
-	log.Printf("The order with id %d was sent to Kitchen by waiter %d. Details: %+v", w.takenOrder.OrderId, w.takenOrder.WaiterId, w.takenOrder) // Unmarshal result
+	log.Printf("The order with id %d was SENT to Kitchen by waiter %d. Details: %+v\n", w.takenOrder.OrderId, w.takenOrder.WaiterId, w.takenOrder) // Unmarshal result
 
 	Tables[w.takenOrder.TableId-1].State = WaitToServe
 

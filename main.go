@@ -24,13 +24,18 @@ func serveOrder(c *gin.Context) {
 	//waiters[cookedOrder.WaiterId-1].ordersChan <- cookedOrder.TableId
 
 	// i can use the waiter using lock, but it is not fastest way because it does not ensure that
-	//as soon as possible, immediately, the waiter will serve
-	//Lock is used to ensure that as soon as the waiter gets free,, it will send serve the order
+	//as soon as possible, immediately, the waiter will serve, here I want to use select with default , then select in the default
+
+	//Lock is used to ensure that as soon as the waiter gets free, it will send serve the order
 	dinning_hall_elem.Waiters[cookedOrder.WaiterId-1].Lock.Lock()
-	log.Printf("Order with ID %d, was served by waiter %d. Details: %+v", cookedOrder.OrderId, cookedOrder.WaiterId, cookedOrder)
+
+	log.Printf("Order with ID %d, was SERVED by waiter %d. Details: %+v \n", cookedOrder.OrderId, cookedOrder.WaiterId, cookedOrder)
+
 	dinning_hall_elem.Tables[cookedOrder.TableId-1].State = dinning_hall_elem.Free
 	dinning_hall_elem.Tables[cookedOrder.TableId-1].ClientOrder = dinning_hall_elem.Order{}
+
 	dinning_hall_elem.Waiters[cookedOrder.WaiterId-1].Lock.Unlock()
+	dinning_hall_elem.Tables[cookedOrder.TableId-1].TableChan <- 1
 
 	c.IndentedJSON(http.StatusCreated, cookedOrder)
 	//tables[cookedOrder.TableId].lock.Unlock()
@@ -47,8 +52,12 @@ func main() {
 	router.GET("/foods", getFoods)
 	router.POST("/distribution", serveOrder)
 	for i, _ := range dinning_hall_elem.Waiters {
-		//i should check if the waiter is free
+
 		go dinning_hall_elem.Waiters[i].LookUpOrders()
+	}
+
+	for i, _ := range dinning_hall_elem.Tables {
+		go dinning_hall_elem.Tables[i].GenerateOrdersForever()
 	}
 
 	router.Run(":8082")
