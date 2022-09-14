@@ -29,3 +29,32 @@ For `Waiters` which are running on separate threads , tables are shared resource
 `kitchen` by performing HTTP (POST) request, with order details.
 When order will be ready, `kitchen` will send a `HTTP` (POST) request back to `Dinning Hall` . The Dinning Hall server has
 to handle that request and to notify waiter that order is ready to be served to the table which requested this order.
+
+## Running the App
+To run the App, run in terminal the following command:<br />
+
+
+`go run .`
+
+
+## Running in Docker container
+1. To run the app in a docker container, first build the image:<br />
+
+`docker build -t dinning-hall .`
+
+2. Then run the container using the created image:<br />
+
+`docker run --name dinning-hall --network restaurant -it --rm  -p 8082:8082 dinning-hall`
+
+For this you firstly need a created docker network. To create a docker network run:
+
+`docker network create restaurant`
+
+3. To stop the running container:
+
+`docker stop {docker's id}`
+
+## Combining with kitchen server
+
+The kitchen server listens first for Post request coming from the dining-hall. To run the system correctly, the kitchen server must run first, and after it the dinning-hall
+server should start running. These servers use HTTP Post request for communication.

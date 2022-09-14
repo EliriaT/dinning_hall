@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/EliriaT/dinning_hall/dinning-hall-elem"
 	"github.com/gin-gonic/gin"
 	"log"
 	"math/rand"
@@ -9,38 +10,57 @@ import (
 )
 
 func getFoods(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, foods)
+	c.IndentedJSON(http.StatusOK, dinning_hall_elem.Foods)
 }
 
 // the waiter should be free, it should be added at a list of needed to serve order, or to notify the waiter, to implement free waiter with mutex
 func serveOrder(c *gin.Context) {
-	var cookedOrder receivedOrd
+	var cookedOrder dinning_hall_elem.ReceivedOrd
 	if err := c.BindJSON(&cookedOrder); err != nil {
 		log.Printf(err.Error())
+		return
 	}
-	tables[cookedOrder.TableId].state = free
-	tables[cookedOrder.TableId].clientOrder = order{}
-	tables[cookedOrder.TableId].lock.Unlock()
 
-	log.Printf("Order with ID %d, was served", cookedOrder.OrderId)
+	//waiters[cookedOrder.WaiterId-1].ordersChan <- cookedOrder.TableId
+
+	// i can use the waiter using lock, but it is not fastest way because it does not ensure that
+	//as soon as possible, immediately, the waiter will serve, here I want to use select with default , then select in the default
+
+	//Lock is used to ensure that as soon as the waiter gets free, it will send serve the order
+	dinning_hall_elem.Waiters[cookedOrder.WaiterId-1].Lock.Lock()
+
+	log.Printf("Order with ID %d, was SERVED by waiter %d. Details: %+v \n", cookedOrder.OrderId, cookedOrder.WaiterId, cookedOrder)
+
+	dinning_hall_elem.Tables[cookedOrder.TableId-1].State = dinning_hall_elem.Free
+	dinning_hall_elem.Tables[cookedOrder.TableId-1].ClientOrder = dinning_hall_elem.Order{}
+
+	dinning_hall_elem.Waiters[cookedOrder.WaiterId-1].Lock.Unlock()
+	dinning_hall_elem.Tables[cookedOrder.TableId-1].TableChan <- 1
+
 	c.IndentedJSON(http.StatusCreated, cookedOrder)
+	//tables[cookedOrder.TableId].lock.Unlock()
 }
 
 func main() {
-	//wg := new(sync.WaitGroup)
-	//wg.Add(1)
+
 	rand.Seed(time.Now().UnixNano())
-	Init()
+
+	dinning_hall_elem.AiOrder.SetId(1)
+	dinning_hall_elem.Init()
 	//wg.Wait()
 	router := gin.Default()
 	router.GET("/foods", getFoods)
 	router.POST("/distribution", serveOrder)
-	for i, _ := range waiters {
-		//i should check if the waiter is free
-		go waiters[i].lookUpOrders()
+	for i, _ := range dinning_hall_elem.Waiters {
+
+		go dinning_hall_elem.Waiters[i].LookUpOrders()
 	}
 
-	router.Run("localhost:8080")
+	for i, _ := range dinning_hall_elem.Tables {
+		go dinning_hall_elem.Tables[i].GenerateOrdersForever()
+	}
+
+	router.Run(":8082")
 
 	//fmt.Printf("hi\n")
 }
