@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/EliriaT/dinning_hall/dinning-hall-elem"
 	"github.com/gin-gonic/gin"
 	"log"
 	"math/rand"
@@ -9,12 +10,12 @@ import (
 )
 
 func getFoods(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, foods)
+	c.IndentedJSON(http.StatusOK, dinning_hall_elem.Foods)
 }
 
 // the waiter should be free, it should be added at a list of needed to serve order, or to notify the waiter, to implement free waiter with mutex
 func serveOrder(c *gin.Context) {
-	var cookedOrder receivedOrd
+	var cookedOrder dinning_hall_elem.ReceivedOrd
 	if err := c.BindJSON(&cookedOrder); err != nil {
 		log.Printf(err.Error())
 		return
@@ -24,33 +25,33 @@ func serveOrder(c *gin.Context) {
 
 	// i can use the waiter using lock, but it is not fastest way because it does not ensure that
 	//as soon as possible, immediately, the waiter will serve
-
-	waiters[cookedOrder.WaiterId-1].lock.Lock()
+	//Lock is used to ensure that as soon as the waiter gets free,, it will send serve the order
+	dinning_hall_elem.Waiters[cookedOrder.WaiterId-1].Lock.Lock()
 	log.Printf("Order with ID %d, was served by waiter %d. Details: %+v", cookedOrder.OrderId, cookedOrder.WaiterId, cookedOrder)
-	tables[cookedOrder.TableId-1].state = free
-	tables[cookedOrder.TableId-1].clientOrder = order{}
-	waiters[cookedOrder.WaiterId-1].lock.Unlock()
+	dinning_hall_elem.Tables[cookedOrder.TableId-1].State = dinning_hall_elem.Free
+	dinning_hall_elem.Tables[cookedOrder.TableId-1].ClientOrder = dinning_hall_elem.Order{}
+	dinning_hall_elem.Waiters[cookedOrder.WaiterId-1].Lock.Unlock()
 
 	c.IndentedJSON(http.StatusCreated, cookedOrder)
 	//tables[cookedOrder.TableId].lock.Unlock()
 }
 
 func main() {
-	//wg := new(sync.WaitGroup)
-	//wg.Add(1)
+
 	rand.Seed(time.Now().UnixNano())
-	aiOrder.SetId(1)
-	Init()
+
+	dinning_hall_elem.AiOrder.SetId(1)
+	dinning_hall_elem.Init()
 	//wg.Wait()
 	router := gin.Default()
 	router.GET("/foods", getFoods)
 	router.POST("/distribution", serveOrder)
-	for i, _ := range waiters {
+	for i, _ := range dinning_hall_elem.Waiters {
 		//i should check if the waiter is free
-		go waiters[i].lookUpOrders()
+		go dinning_hall_elem.Waiters[i].LookUpOrders()
 	}
 
-	router.Run("localhost:8080")
+	router.Run(":8082")
 
 	//fmt.Printf("hi\n")
 }

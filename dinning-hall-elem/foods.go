@@ -1,4 +1,4 @@
-package main
+package dinning_hall_elem
 
 type food struct {
 	Id               int    `json:"id"`
@@ -8,7 +8,7 @@ type food struct {
 	CookingApparatus string `json:"cooking-apparatus"`
 }
 
-var foods = []food{
+var Foods = []food{
 	{Id: 1, Name: "pizza", PreparationTime: 20, Complexity: 2, CookingApparatus: "oven"},
 	{Id: 2, Name: "salad", PreparationTime: 10, Complexity: 1, CookingApparatus: ""},
 	{Id: 3, Name: "zeama", PreparationTime: 7, Complexity: 1, CookingApparatus: "stove"},
