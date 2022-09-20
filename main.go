@@ -1,30 +1,42 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/EliriaT/dinning_hall/dinning-hall-elem"
-	"github.com/gin-gonic/gin"
+	"github.com/gorilla/mux"
 	"log"
 	"math/rand"
 	"net/http"
 	"time"
 )
 
-func getFoods(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, dinning_hall_elem.Foods)
+func getFoods(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	jsonFoods, err := json.Marshal(dinning_hall_elem.Foods)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	//by default sends 200
+	w.Write(jsonFoods)
 }
 
 // the waiter should be free, it should be added at a list of needed to serve order, or to notify the waiter, to implement free waiter with mutex
-func serveOrder(c *gin.Context) {
+func serveOrder(w http.ResponseWriter, r *http.Request) {
 	var cookedOrder dinning_hall_elem.ReceivedOrd
-	if err := c.BindJSON(&cookedOrder); err != nil {
-		log.Printf(err.Error())
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&cookedOrder)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	dinning_hall_elem.Waiters[cookedOrder.WaiterId-1].CookedOrdersChan <- cookedOrder
 
-	c.IndentedJSON(http.StatusCreated, cookedOrder)
-
+	defer r.Body.Close()
+	jsonCookedOrder, _ := json.Marshal(cookedOrder)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonCookedOrder)
 }
 
 func giveOrderStars(serveTime time.Duration, maxWait float64) int {
@@ -55,9 +67,9 @@ func main() {
 	dinning_hall_elem.AiOrder.SetId(1)
 	dinning_hall_elem.Init()
 
-	router := gin.Default()
-	router.GET("/foods", getFoods)
-	router.POST("/distribution", serveOrder)
+	r := mux.NewRouter()
+	r.HandleFunc("/", getFoods).Methods("GET")
+	r.HandleFunc("/distribution", serveOrder).Methods("POST")
 	for i, _ := range dinning_hall_elem.Waiters {
 
 		go dinning_hall_elem.Waiters[i].Work()
@@ -67,7 +79,8 @@ func main() {
 		go dinning_hall_elem.Tables[i].GenerateOrdersForever()
 	}
 
-	router.Run(":8082")
+	log.Println("Dinning Hall server started..")
+	log.Fatal(http.ListenAndServe(":8082", r))
 
 	//fmt.Printf("hi\n")
 }
