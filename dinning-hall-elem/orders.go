@@ -1,6 +1,7 @@
 package dinning_hall_elem
 
 import (
+	"math"
 	"math/rand"
 	"sync"
 	"time"
@@ -61,7 +62,7 @@ func newOrder() Order {
 	return Order{
 		Id:       AiOrder.ID(),
 		Items:    foodList,
-		Priority: rand.Intn(5) + 1,
+		Priority: int(math.Round(float64(nrItems) / 2)),
 		MaxWait:  float64(maxWait) * 1.3,
 	}
 }
