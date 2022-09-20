@@ -23,6 +23,9 @@ WORKDIR /app
 # copy server binary from `build` layer
 COPY --from=build /build/dinning-hall .
 
+# copy a scrip for container sinchronization
+COPY wait-for.sh .
+
 # binary to run
 CMD "/app/dinning-hall"
 

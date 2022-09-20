@@ -23,3 +23,5 @@ var Foods = []food{
 	{Id: 12, Name: "Unagi Maki", PreparationTime: 20, Complexity: 2, CookingApparatus: ""},
 	{Id: 13, Name: "Tobacco Chicken", PreparationTime: 30, Complexity: 2, CookingApparatus: "oven"},
 }
+
+var OrderMarks = make([]int, 0, 100)

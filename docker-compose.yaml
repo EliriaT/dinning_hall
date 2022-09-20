@@ -1,0 +1,32 @@
+networks:
+  restaurant:
+    external: true
+
+services:
+  kitchen:
+    image: kitchen-go-server
+
+    networks:
+      -   restaurant
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+
+
+
+  dinning-hall:
+    image: dinning-hall
+    depends_on:
+      - kitchen
+    networks:
+      -   restaurant
+    ports:
+      - "8082:8082"
+    entrypoint: ["/app/wait-for.sh","kitchen:8080","--","/app/dinning-hall"]
+
+    expose:
+      - "8082"
+
+
+

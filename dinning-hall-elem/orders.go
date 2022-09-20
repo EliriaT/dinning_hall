@@ -1,6 +1,7 @@
 package dinning_hall_elem
 
 import (
+	"math"
 	"math/rand"
 	"sync"
 	"time"
@@ -35,10 +36,10 @@ func (a *autoInc) ID() (id int) {
 }
 
 type Order struct {
-	Id       int   `json:"id"`
-	Items    []int `json:"items"`
-	Priority int   `json:"priority"`
-	MaxWait  int   `json:"max_wait"`
+	Id       int     `json:"id"`
+	Items    []int   `json:"items"`
+	Priority int     `json:"priority"`
+	MaxWait  float64 `json:"max_wait"`
 }
 
 // Function to create new order and return it
@@ -61,31 +62,31 @@ func newOrder() Order {
 	return Order{
 		Id:       AiOrder.ID(),
 		Items:    foodList,
-		Priority: rand.Intn(5) + 1,
-		MaxWait:  maxWait,
+		Priority: int(math.Round(float64(nrItems) / 2)),
+		MaxWait:  float64(maxWait) * 1.3,
 	}
 }
 
-//order data received from kitchen
+// order data received from kitchen
 type ReceivedOrd struct {
 	OrderId        int              `json:"order_id"`
 	TableId        int              `json:"table_id"`
 	WaiterId       int              `json:"waiter_id"`
 	Items          []int            `json:"items"`
 	Priority       int              `json:"priority"`
-	MaxWait        int              `json:"max_wait"`
+	MaxWait        float64          `json:"max_wait"`
 	PickUpTime     time.Time        `json:"pick_up_time"`
 	CookingTime    time.Duration    `json:"cooking_time"`
 	CookingDetails []kitchenFoodInf `json:"cooking_details"`
 }
 
-//order data sent to kitchen
+// order data sent to kitchen
 type sentOrd struct {
 	OrderId    int       `json:"order_id"`
 	TableId    int       `json:"table_id"`
 	WaiterId   int       `json:"waiter_id"`
 	Items      []int     `json:"items"`
 	Priority   int       `json:"priority"`
-	MaxWait    int       `json:"max_wait"`
+	MaxWait    float64   `json:"max_wait"`
 	PickUpTime time.Time `json:"pick_up_time"`
 }
