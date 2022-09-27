@@ -27,7 +27,7 @@ func (t *Table) GenerateOrdersForever() {
 
 	for _ = range t.TableChan {
 		//The table thinks before generating a order
-		time.Sleep(TimeUnit * time.Duration(rand.Intn(50)+3))
+		time.Sleep(TimeUnit * time.Duration(rand.Intn(300)+30))
 		t.makeOrder()
 
 		fmt.Printf("Table %d generated order: %+v \n", t.Id, t.ClientOrder)

@@ -121,7 +121,7 @@ func (w *waiter) sendOrder() {
 		log.Printf(err.Error())
 		return
 	}
-	resp, err := http.Post("http://localhost:8080/order", "application/json", bytes.NewBuffer(reqBody))
+	resp, err := http.Post(URL, "application/json", bytes.NewBuffer(reqBody))
 	if err != nil {
 		log.Printf("Request Failed: %s", err.Error())
 		return
