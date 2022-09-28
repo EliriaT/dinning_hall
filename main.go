@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"github.com/EliriaT/dinning_hall/dinning-hall-elem"
 	"github.com/gorilla/mux"
+	"runtime"
+
+	//_ "go.uber.org/automaxprocs"
 	"log"
 	"math/rand"
 	"net/http"
@@ -61,7 +64,7 @@ func giveOrderStars(serveTime time.Duration, maxWait float64) int {
 }
 
 func main() {
-
+	runtime.GOMAXPROCS(2)
 	rand.Seed(time.Now().UnixNano())
 	//
 	dinning_hall_elem.AiOrder.SetId(1)

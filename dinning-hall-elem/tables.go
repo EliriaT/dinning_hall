@@ -6,15 +6,6 @@ import (
 	"time"
 )
 
-type tableState int
-
-// states of a table
-const (
-	Free tableState = iota
-	WaitToOrder
-	WaitToServe
-)
-
 type Table struct {
 	Id          int
 	State       tableState
