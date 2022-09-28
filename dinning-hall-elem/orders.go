@@ -3,14 +3,9 @@ package dinning_hall_elem
 import (
 	"math"
 	"math/rand"
+	"sort"
 	"sync"
 	"time"
-)
-
-const (
-	maxFoods = 10
-	minFoods = 1
-	nrFoods  = 13
 )
 
 var OrdersChannel = make(chan int, len(Tables))
@@ -59,9 +54,16 @@ func newOrder() Order {
 		}
 
 	}
+	//sort in descending order according foods complexity
+	sort.Slice(foodList, func(i, j int) bool {
+		return Foods[foodList[i]-1].Complexity > Foods[foodList[j]-1].Complexity
+
+	})
+
 	return Order{
-		Id:       AiOrder.ID(),
-		Items:    foodList,
+		Id:    AiOrder.ID(),
+		Items: foodList,
+		//5 the lowest priority, 1 the most priority.
 		Priority: int(math.Round(float64(nrItems) / 2)),
 		MaxWait:  float64(maxWait) * 1.3,
 	}
