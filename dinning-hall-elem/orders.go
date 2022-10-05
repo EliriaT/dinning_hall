@@ -39,6 +39,15 @@ type Order struct {
 func newOrder() Order {
 
 	nrItems := rand.Intn(maxFoods) + minFoods
+
+	for i := 0; i < 3; i++ {
+		if nrItems > 5 {
+			nrItems = rand.Intn(maxFoods) + minFoods
+		} else {
+			break
+		}
+	}
+
 	foodList := make([]int, nrItems)
 	maxWait := 0
 

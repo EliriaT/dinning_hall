@@ -7,7 +7,7 @@ import (
 
 const (
 	TimeUnit    = time.Duration(float64(time.Millisecond) * 10)
-	OrdersLimit = 100
+	OrdersLimit = 50
 	maxFoods    = 10
 	minFoods    = 1
 	nrFoods     = 13
