@@ -8,11 +8,9 @@ import (
 	"time"
 )
 
-var OrdersChannel = make(chan int, len(Tables))
 var AiOrder autoInc
 
-// used to autoincrement order's id, tables will run go routines when generating order,
-// that is why it should be locked
+// used to autoincrement order's id
 type autoInc struct {
 	sync.Mutex // ensures autoInc is goroutine-safe
 	id         int
@@ -67,6 +65,7 @@ func newOrder() Order {
 		Priority: int(math.Round(float64(nrItems) / 2)),
 		MaxWait:  float64(maxWait) * 1.3,
 	}
+
 }
 
 // order data received from kitchen

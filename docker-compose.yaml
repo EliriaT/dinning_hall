@@ -13,8 +13,6 @@ services:
     expose:
       - "8080"
 
-
-
   dinning-hall:
     image: dinning-hall
     depends_on:
@@ -27,6 +25,5 @@ services:
 
     expose:
       - "8082"
-
 
 
