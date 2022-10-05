@@ -8,20 +8,15 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
-	"sync"
 	"time"
 )
 
 type waiter struct {
-	id               int
-	catchPhrase      string
+	Id               int    `json:"id"`
+	CatchPhrase      string `json:"catchPhrase"`
 	takenOrder       sentOrd
-	free             bool
-	Lock             *sync.Mutex
 	CookedOrdersChan chan ReceivedOrd
 }
-
-var MarkMutex = &sync.Mutex{}
 
 type kitchenFoodInf struct {
 	FoodId int `json:"food_id"`
@@ -29,39 +24,37 @@ type kitchenFoodInf struct {
 }
 
 func (w waiter) sayPhrase() {
-	fmt.Printf("%s", w.catchPhrase)
+	fmt.Printf("%s", w.CatchPhrase)
 }
 
 func (w *waiter) Work() {
+
 	for {
 		select {
+
 		case kitchOrder := <-w.CookedOrdersChan:
 			w.serveOrder(kitchOrder)
 		default:
 
+			//this select will block, an wait on data on any channel
 			select {
 			case kitchOrder := <-w.CookedOrdersChan:
 				w.serveOrder(kitchOrder)
 			case hallOrder := <-OrdersChannel:
 
+				//to check again if a cooked order didnt arrive
 				select {
 				case kitchOrder := <-w.CookedOrdersChan:
 					w.serveOrder(kitchOrder)
 
-					//w.Lock.Lock()
-
+					//send the hall order after serving the received order
 					w.takeOrder(hallOrder)
 					w.sendOrder()
-
-					//w.Lock.Unlock()
 				default:
 
-					//w.Lock.Lock()
-
 					w.takeOrder(hallOrder)
 					w.sendOrder()
 
-					//w.Lock.Unlock()
 				}
 			}
 		}
@@ -74,9 +67,9 @@ func (w *waiter) serveOrder(cookedOrder ReceivedOrd) {
 	//
 	orderRaiting := giveOrderStars(serveTime, cookedOrder.MaxWait)
 
-	log.Printf("Order with ID %d, was SERVED by waiter %d. Details: %+v \n ", cookedOrder.OrderId, cookedOrder.WaiterId, cookedOrder)
+	log.Printf("------Order with ID %d, was SERVED by waiter %d. Details: %+v \n ------", cookedOrder.OrderId, cookedOrder.WaiterId, cookedOrder)
 
-	log.Printf("RAITING OF ORDER IS %d, MAX TIME IS %f, SERVE TIME IS %v", orderRaiting, cookedOrder.MaxWait, serveTime)
+	log.Printf("------RAITING OF ORDER IS %d, MAX TIME IS %f, SERVE TIME IS %v------", orderRaiting, cookedOrder.MaxWait, serveTime)
 	Tables[cookedOrder.TableId-1].State = Free
 	Tables[cookedOrder.TableId-1].ClientOrder = Order{}
 
@@ -92,6 +85,7 @@ func (w *waiter) serveOrder(cookedOrder ReceivedOrd) {
 		os.Exit(0)
 	}
 
+	//signaling that the table is now free to make another order
 	Tables[cookedOrder.TableId-1].TableChan <- 1
 
 }
@@ -105,7 +99,7 @@ func (w *waiter) takeOrder(tableId int) {
 	var ord = sentOrd{
 		OrderId:    table.ClientOrder.Id,
 		TableId:    tableId,
-		WaiterId:   w.id,
+		WaiterId:   w.Id,
 		Items:      table.ClientOrder.Items,
 		Priority:   table.ClientOrder.Priority,
 		MaxWait:    table.ClientOrder.MaxWait,
@@ -132,11 +126,4 @@ func (w *waiter) sendOrder() {
 
 	Tables[w.takenOrder.TableId-1].State = WaitToServe
 
-}
-
-var Waiters = []waiter{
-	{id: 1, catchPhrase: "Hii, i am Mikee", free: true, Lock: &sync.Mutex{}, CookedOrdersChan: make(chan ReceivedOrd, 10)},
-	{id: 2, catchPhrase: "Finally got some tips from t a table!", free: true, Lock: &sync.Mutex{}, CookedOrdersChan: make(chan ReceivedOrd, 10)},
-	{id: 3, catchPhrase: "Oh, what a grumpy client", free: true, Lock: &sync.Mutex{}, CookedOrdersChan: make(chan ReceivedOrd, 10)},
-	{id: 4, catchPhrase: "I love my work!", free: true, Lock: &sync.Mutex{}, CookedOrdersChan: make(chan ReceivedOrd, 10)},
 }
