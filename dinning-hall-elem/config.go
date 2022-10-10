@@ -6,14 +6,19 @@ import (
 )
 
 const (
-	TimeUnit    = time.Duration(float64(time.Millisecond) * 10)
-	OrdersLimit = 50
-	maxFoods    = 10
-	minFoods    = 1
-	nrFoods     = 13
-	nrTables    = 10
-	//URL         = "http://kitchen:8080/order"
-	URL = "http://localhost:8080/order"
+	TimeUnit       = time.Duration(float64(time.Millisecond) * 100)
+	OrdersLimit    = 1000
+	MaxFoods       = 10
+	minFoods       = 1
+	NrFoods        = 13
+	nrTables       = 10
+	RestaurantId   = 1
+	RestaurantName = "La Placinte"
+	Rating         = 5
+	DinningHallUrl = "http://localhost:8082/"
+	//KitchenURL         = "http://kitchen:8080/"
+	KitchenURL = "http://localhost:8080/"
+	ManagerURL = "http://localhost:8084/"
 )
 
 type tableState int
@@ -26,11 +31,17 @@ const (
 )
 
 var (
-	Tables        []Table
-	Waiters       []waiter
-	Foods         []food
-	OrderMarks    = make([]int, 0, 100)
+	Tables  []Table
+	Waiters []waiter
+	Foods   []Food
+	//OrderMarks    = make([]int, 0, 100)
 	OrdersChannel = make(chan int, nrTables)
 	// Used to concurrently safe append to the RaitingSlice
-	MarkMutex = &sync.Mutex{}
+	MarkMutex  = &sync.Mutex{}
+	markLength = 0
+	sum        = 0
+	//Used to assign id's to online orders
+	//OrderIdInc int32
+	//ListOfOnlineCookedOrders
+	OnlineCookedOrder = make([]ReceivedOrd, 0, 100)
 )
