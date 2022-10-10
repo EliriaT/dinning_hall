@@ -7,7 +7,6 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -75,15 +74,17 @@ func (w *waiter) serveOrder(cookedOrder ReceivedOrd) {
 
 	//freeing the table
 	MarkMutex.Lock()
-	OrderMarks = append(OrderMarks, orderRaiting)
+	markLength++
+	avg := calculateAverage(orderRaiting)
+	log.Println("-----Average is : ", avg, "-----")
 	MarkMutex.Unlock()
 
 	//For allowing to limit work time of the restaurant
-	if len(OrderMarks) == OrdersLimit {
-		avg := calculateAverage()
-		log.Println("Program Terminating; Restaurant's average is : ", avg)
-		os.Exit(0)
-	}
+	//if len(OrderMarks) == OrdersLimit {
+	//	avg := calculateAverage()
+	//	log.Println("Program Terminating; Restaurant's average is : ", avg)
+	//	os.Exit(0)
+	//}
 
 	//signaling that the table is now free to make another order
 	Tables[cookedOrder.TableId-1].TableChan <- 1
@@ -115,7 +116,7 @@ func (w *waiter) sendOrder() {
 		log.Printf(err.Error())
 		return
 	}
-	resp, err := http.Post(URL, "application/json", bytes.NewBuffer(reqBody))
+	resp, err := http.Post(KitchenURL+"order", "application/json", bytes.NewBuffer(reqBody))
 	if err != nil {
 		log.Printf("Request Failed: %s", err.Error())
 		return

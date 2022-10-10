@@ -1,8 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"github.com/EliriaT/dinning_hall/dinning-hall-elem"
+	"github.com/EliriaT/dinning_hall/handlers"
+	"github.com/EliriaT/dinning_hall/versionTwoElems"
 	"github.com/gorilla/mux"
 	"runtime"
 
@@ -13,46 +14,24 @@ import (
 	"time"
 )
 
-func getFoods(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	jsonFoods, err := json.Marshal(dinning_hall_elem.Foods)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	//by default sends 200
-	w.Write(jsonFoods)
-}
-
-func serveOrder(w http.ResponseWriter, r *http.Request) {
-	var cookedOrder dinning_hall_elem.ReceivedOrd
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&cookedOrder)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	dinning_hall_elem.Waiters[cookedOrder.WaiterId-1].CookedOrdersChan <- cookedOrder
-
-	defer r.Body.Close()
-	jsonCookedOrder, _ := json.Marshal(cookedOrder)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonCookedOrder)
-}
-
 func main() {
 
 	runtime.GOMAXPROCS(1)
 	rand.Seed(time.Now().UnixNano())
-	//
+	//TODO REGISTER RESTAURANT
 
 	dinning_hall_elem.AiOrder.SetId(1)
 	dinning_hall_elem.Init()
-	log.Println("finished")
+	versionTwoElems.RegisterRestaurant()
+
 	r := mux.NewRouter()
-	r.HandleFunc("/", getFoods).Methods("GET")
-	r.HandleFunc("/distribution", serveOrder).Methods("POST")
+	r.HandleFunc("/", handlers.GetFoods).Methods("GET")
+	r.HandleFunc("/distribution", handlers.ServeOrder).Methods("POST")
+
+	s := r.PathPrefix("/v2").Subrouter()
+	s.HandleFunc("/order", handlers.ReceiveOnlineOrder)
+
+	//s.HandleFunc("/order/{id:[0-9]+}", handlers.ReceiveOnlineOrder)
 
 	for i, _ := range dinning_hall_elem.Waiters {
 

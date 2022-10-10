@@ -10,12 +10,12 @@ import (
 	"time"
 )
 
-func calculateAverage() float64 {
-	sum := 0
-	for _, mark := range OrderMarks {
-		sum += mark
-	}
-	avg := float64(sum) / float64(len(OrderMarks))
+func calculateAverage(raiting int) float64 {
+	sum = sum + raiting
+	//for _, mark := range OrderMarks {
+	//	sum += mark
+	//}
+	avg := float64(sum) / float64(markLength)
 	return avg
 }
 
@@ -62,7 +62,7 @@ func initWaiter() {
 	for i := range Waiters {
 		Waiters[i].CookedOrdersChan = make(chan ReceivedOrd, 10)
 	}
-	log.Println("Waiters: ", Waiters)
+	//log.Println("Waiters: ", Waiters)
 }
 
 func initiate_Foods() {
@@ -74,8 +74,6 @@ func initiate_Foods() {
 
 	byteValue, _ := io.ReadAll(file)
 	_ = json.Unmarshal(byteValue, &Foods)
-
-	log.Println(Foods)
 
 }
 

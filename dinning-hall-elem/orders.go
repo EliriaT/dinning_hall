@@ -38,11 +38,11 @@ type Order struct {
 // Function to create new order and return it
 func newOrder() Order {
 
-	nrItems := rand.Intn(maxFoods) + minFoods
+	nrItems := rand.Intn(MaxFoods) + minFoods
 
 	for i := 0; i < 3; i++ {
 		if nrItems > 5 {
-			nrItems = rand.Intn(maxFoods) + minFoods
+			nrItems = rand.Intn(MaxFoods) + minFoods
 		} else {
 			break
 		}
@@ -52,7 +52,7 @@ func newOrder() Order {
 	maxWait := 0
 
 	for i := 0; i < nrItems; i++ {
-		foodId := rand.Intn(nrFoods) + 1
+		foodId := rand.Intn(NrFoods) + 1
 		//in the json the id starts from 1
 		foodList[i] = foodId
 
