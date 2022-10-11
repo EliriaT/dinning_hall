@@ -46,8 +46,12 @@ To run the App, run in terminal the following command:<br />
 
 `docker run --name dinning-hall --network restaurant -it --rm  -p 8082:8082 dinning-hall`
 
+
+
 To run multiple containers with different configurations run:
+
 `docker run --name dinning-hall1 -v /home/irina/UTM/SEM5/PR/LAB2/First_Checkpoint/dinning_hall/jsonConfig:/app/jsonConfig  --network restaurant -it --rm  -p 8082:8082 dinning-hall`
+
 `docker run --name dinning-hall2 -v /home/irina/UTM/SEM5/PR/LAB2/First_Checkpoint/dinning_hall/jsonConfig2:/app/jsonConfig  --network restaurant -it --rm  -p 8088:8088 dinning-hall`
 
 For this you firstly need a created docker network. To create a docker network run:
