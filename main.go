@@ -43,6 +43,6 @@ func main() {
 	}
 
 	log.Println("Dinning Hall server started..")
-	log.Fatal(http.ListenAndServe(":8082", r))
+	log.Fatal(http.ListenAndServe(dinning_hall_elem.Port, r))
 
 }
