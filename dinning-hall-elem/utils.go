@@ -7,6 +7,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -77,8 +78,33 @@ func initiate_Foods() {
 
 }
 
+func initiate_Congif() {
+	var config map[string]string
+
+	file, err := os.Open("./jsonConfig/config.json")
+	if err != nil {
+		log.Fatal("Error opening config.json ", err)
+	}
+	defer file.Close()
+
+	byteValue, _ := io.ReadAll(file)
+
+	_ = json.Unmarshal(byteValue, &config)
+	DinningHallUrl = config["my_address"]
+	KitchenURL = config["kitchen_address"]
+	ManagerURL = config["food_manager_address"]
+	Port = config["listenning_port"]
+	RestaurantName = config["restaurant_name"]
+	RestaurantId, err = strconv.Atoi(config["resaurant_id"])
+	if err != nil {
+		log.Fatal("Error int conversion")
+	}
+
+}
+
 // init function to initialize first orders
 func Init() {
+	initiate_Congif()
 	initTable()
 	initWaiter()
 	initiate_Foods()

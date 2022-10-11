@@ -6,19 +6,14 @@ import (
 )
 
 const (
-	TimeUnit       = time.Duration(float64(time.Millisecond) * 100)
-	OrdersLimit    = 1000
-	MaxFoods       = 10
-	minFoods       = 1
-	NrFoods        = 13
-	nrTables       = 10
-	RestaurantId   = 1
-	RestaurantName = "La Placinte"
-	Rating         = 5
-	DinningHallUrl = "http://localhost:8082/"
-	//KitchenURL         = "http://kitchen:8080/"
-	KitchenURL = "http://localhost:8080/"
-	ManagerURL = "http://localhost:8084/"
+	TimeUnit    = time.Duration(float64(time.Millisecond) * 25)
+	OrdersLimit = 1000
+	MaxFoods    = 10
+	minFoods    = 1
+	NrFoods     = 13
+	nrTables    = 10
+
+	Rating = 5
 )
 
 type tableState int
@@ -31,6 +26,14 @@ const (
 )
 
 var (
+	Port           string
+	DinningHallUrl = "http://localhost:8082/"
+	KitchenURL     = "http://kitchen1:8080/"
+	//KitchenURL = "http://localhost:8080/"
+	ManagerURL     = "http://localhost:8084/"
+	RestaurantId   = 1
+	RestaurantName = "La Placinte"
+
 	Tables  []Table
 	Waiters []waiter
 	Foods   []Food
@@ -40,8 +43,7 @@ var (
 	MarkMutex  = &sync.Mutex{}
 	markLength = 0
 	sum        = 0
-	//Used to assign id's to online orders
-	//OrderIdInc int32
+
 	//ListOfOnlineCookedOrders
 	OnlineCookedOrder = make([]ReceivedOrd, 0, 100)
 )

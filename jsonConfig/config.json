@@ -1,0 +1,9 @@
+{
+  "my_address":"http://dinning-hall1:8082/",
+  "kitchen_address": "http://kitchen1:8080/",
+  "food_manager_address": "http://food-ordering:8084/",
+  "listenning_port": ":8082",
+  "resaurant_id": "1",
+  "restaurant_name":"Sansushi"
+
+}

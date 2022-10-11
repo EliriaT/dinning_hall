@@ -1,0 +1,9 @@
+{
+  "my_address":"http://dinning-hall2:8088/",
+  "kitchen_address": "http://kitchen2:8086/",
+  "food_manager_address": "http://food-ordering:8084/",
+  "listenning_port": ":8088",
+  "resaurant_id": "2",
+  "restaurant_name":"La Placinte"
+
+}
