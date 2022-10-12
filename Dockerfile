@@ -24,7 +24,7 @@ WORKDIR /app
 COPY --from=build /app/dinning-hall .
 COPY --from=build /app/jsonConfig ./jsonConfig
 
-# copy a scrip for container sinchronization
+# copy a script for container sinchronization
 COPY wait-for.sh .
 
 # binary to run

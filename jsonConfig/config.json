@@ -4,6 +4,7 @@
   "food_manager_address": "http://food-ordering:8084/",
   "listenning_port": ":8082",
   "resaurant_id": "1",
-  "restaurant_name":"Sansushi"
+  "restaurant_name":"Sansushi",
+  "nr_tables": "6"
 
 }

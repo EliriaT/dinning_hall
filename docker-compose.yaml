@@ -1,10 +1,12 @@
 networks:
   restaurant:
     external: true
-
+name: restaurant
 services:
-  kitchen:
+  kitchen1:
     image: kitchen-go-server
+    volumes:
+      - /home/irina/UTM/SEM5/PR/LAB2/First_Checkpoint/kitchen/jsonConfig:/app/jsonConfig
 
     networks:
       -   restaurant
@@ -13,17 +15,68 @@ services:
     expose:
       - "8080"
 
-  dinning-hall:
+  kitchen2:
+    image: kitchen-go-server
+    volumes:
+      - /home/irina/UTM/SEM5/PR/LAB2/First_Checkpoint/kitchen/jsonConfig2:/app/jsonConfig
+
+    networks:
+      - restaurant
+    ports:
+      - "8086:8086"
+    expose:
+      - "8086"
+
+#Dinning-halls should wait for for kitchens together with food-ordering
+
+  dinning-hall1:
     image: dinning-hall
+    volumes:
+      - /home/irina/UTM/SEM5/PR/LAB2/First_Checkpoint/dinning_hall/jsonConfig:/app/jsonConfig
     depends_on:
-      - kitchen
+      - kitchen1
     networks:
       -   restaurant
     ports:
       - "8082:8082"
-    entrypoint: ["/app/wait-for.sh","kitchen:8080","--","/app/dinning-hall"]
+    entrypoint: ["/app/wait-for.sh","kitchen1:8080","--","/app/wait-for.sh","food-ordering:8084","--","/app/dinning-hall"]
 
     expose:
       - "8082"
+
+
+  dinning-hall2:
+    image: dinning-hall
+    volumes:
+      - /home/irina/UTM/SEM5/PR/LAB2/First_Checkpoint/dinning_hall/jsonConfig2:/app/jsonConfig
+    depends_on:
+      - kitchen2
+    networks:
+      - restaurant
+    ports:
+      - "8088:8088"
+    entrypoint: [ "/app/wait-for.sh","kitchen2:8086","--","/app/wait-for.sh","food-ordering:8084","--","/app/dinning-hall" ]
+
+    expose:
+      - "8088"
+
+  food-ordering:
+    image:  food-ordering
+    networks:
+      - restaurant
+    ports:
+      - "8084:8084"
+    expose:
+      - "8084"
+
+  client:
+    image: client
+    networks:
+      - restaurant
+    entrypoint: [ "/app/wait-for.sh","food-ordering:8084","--","/app/wait-for.sh","dinning-hall1:8082","--","/app/wait-for.sh","dinning-hall2:8088","--","/app/client" ]
+
+
+
+
 
 

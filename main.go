@@ -22,6 +22,7 @@ func main() {
 
 	dinning_hall_elem.AiOrder.SetId(1)
 	dinning_hall_elem.Init()
+
 	versionTwoElems.RegisterRestaurant()
 
 	r := mux.NewRouter()

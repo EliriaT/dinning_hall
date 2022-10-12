@@ -32,6 +32,7 @@ func (t *Table) makeOrder() {
 
 	t.State = WaitToOrder
 	t.ClientOrder = newOrder()
+
 	//sending the order to waiters; a waiter which is free will take it; All waiters are listening to the OrdersChannel
 	OrdersChannel <- t.Id
 
