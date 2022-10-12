@@ -8,37 +8,7 @@ import (
 	"math/rand"
 	"os"
 	"strconv"
-	"time"
 )
-
-func calculateAverage(raiting int) float64 {
-	sum = sum + raiting
-	//for _, mark := range OrderMarks {
-	//	sum += mark
-	//}
-	avg := float64(sum) / float64(markLength)
-	return avg
-}
-
-func giveOrderStars(serveTime time.Duration, maxWait float64) int {
-	//serveTimeMillisec := float64(serveTime)*1000 //time in milliseconds
-	serveTimeNonUnit := float64(serveTime) / float64(TimeUnit)
-
-	switch {
-	case serveTimeNonUnit < maxWait:
-		return 5
-	case serveTimeNonUnit < maxWait*1.1:
-		return 4
-	case serveTimeNonUnit < maxWait*1.2:
-		return 3
-	case serveTimeNonUnit < maxWait*1.3:
-		return 2
-	case serveTimeNonUnit < maxWait*1.4:
-		return 1
-	default:
-		return 0
-	}
-}
 
 func initTable() {
 	Tables = make([]Table, nrTables, nrTables)
@@ -76,6 +46,8 @@ func initiate_Foods() {
 	byteValue, _ := io.ReadAll(file)
 	_ = json.Unmarshal(byteValue, &Foods)
 
+	NrFoods = len(Foods)
+
 }
 
 func initiate_Congif() {
@@ -90,12 +62,16 @@ func initiate_Congif() {
 	byteValue, _ := io.ReadAll(file)
 
 	_ = json.Unmarshal(byteValue, &config)
+
 	DinningHallUrl = config["my_address"]
 	KitchenURL = config["kitchen_address"]
 	ManagerURL = config["food_manager_address"]
 	Port = config["listenning_port"]
 	RestaurantName = config["restaurant_name"]
 	RestaurantId, err = strconv.Atoi(config["resaurant_id"])
+	nrTables, err = strconv.Atoi(config["nr_tables"])
+	OrdersChannel = make(chan int, nrTables)
+
 	if err != nil {
 		log.Fatal("Error int conversion")
 	}
@@ -105,16 +81,20 @@ func initiate_Congif() {
 // init function to initialize first orders
 func Init() {
 	initiate_Congif()
+
 	initTable()
+
 	initWaiter()
+
 	initiate_Foods()
+
 	for i := range Tables {
 		// this means table is free
 		Tables[i].TableChan <- 1
 	}
 
 	//random number of tables up to 5 can at start generate order
-	nrTablesInit := rand.Intn(5) + 1
+	nrTablesInit := rand.Intn(3) + 1
 
 	//Get random ID's of tables shuffled
 	randTableInit := rand.Perm(nrTables)
@@ -124,10 +104,10 @@ func Init() {
 
 	for _, i := range randTableInit {
 		Tables[i].makeOrder()
-
 		<-Tables[i].TableChan
 		fmt.Printf("Table %d generated order: %+v \n", i+1, Tables[i].ClientOrder)
 
 	}
+
 	log.Printf("Init finished")
 }
