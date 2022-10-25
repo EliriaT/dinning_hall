@@ -1,13 +1,15 @@
 package dinning_hall_elem
 
-import "time"
+import (
+	"time"
+)
 
-func calculateAverage(rating int) float64 {
+func CalculateAverage(rating int) float64 {
 	sum = sum + rating
 	//for _, mark := range OrderMarks {
 	//	sum += mark
 	//}
-	avg := float64(sum) / float64(markLength)
+	avg := float64(sum) / float64(MarkLength)
 	return avg
 }
 

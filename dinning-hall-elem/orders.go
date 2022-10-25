@@ -13,18 +13,18 @@ var AiOrder autoInc
 // used to autoincrement order's id
 type autoInc struct {
 	sync.Mutex // ensures autoInc is goroutine-safe
-	id         int
+	Id         int
 }
 
 func (a *autoInc) SetId(id int) {
-	a.id = id
+	a.Id = id
 }
 
 func (a *autoInc) ID() (id int) {
 	a.Lock()
 	defer a.Unlock()
-	id = a.id
-	a.id++
+	id = a.Id
+	a.Id++
 	return
 }
 
@@ -87,7 +87,7 @@ type ReceivedOrd struct {
 	MaxWait        float64          `json:"max_wait"`
 	PickUpTime     time.Time        `json:"pick_up_time"`
 	CookingTime    time.Duration    `json:"cooking_time"`
-	CookingDetails []kitchenFoodInf `json:"cooking_details"`
+	CookingDetails []KitchenFoodInf `json:"cooking_details"`
 }
 
 // order data sent to kitchen

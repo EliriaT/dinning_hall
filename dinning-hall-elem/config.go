@@ -34,15 +34,12 @@ var (
 	Rating         float32
 
 	Tables  []Table
-	Waiters []waiter
+	Waiters []Waiter
 	Foods   []Food
 
 	OrdersChannel chan int
 	// Used to concurrently safe append to the RaitingSlice
 	MarkMutex  = &sync.Mutex{}
-	markLength = 0
+	MarkLength = 0
 	sum        = 0
-
-	//ListOfOnlineCookedOrders
-	OnlineCookedOrder = make([]ReceivedOrd, 0, 100)
 )

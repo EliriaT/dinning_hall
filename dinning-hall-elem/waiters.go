@@ -4,29 +4,30 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+
 	"log"
 	"math/rand"
 	"net/http"
 	"time"
 )
 
-type waiter struct {
+type Waiter struct {
 	Id               int    `json:"id"`
 	CatchPhrase      string `json:"catchPhrase"`
 	takenOrder       sentOrd
 	CookedOrdersChan chan ReceivedOrd
 }
 
-type kitchenFoodInf struct {
+type KitchenFoodInf struct {
 	FoodId int `json:"food_id"`
 	CookId int `json:"cook_id"`
 }
 
-func (w waiter) sayPhrase() {
+func (w Waiter) sayPhrase() {
 	fmt.Printf("%s", w.CatchPhrase)
 }
 
-func (w *waiter) Work() {
+func (w *Waiter) Work() {
 
 	for {
 		select {
@@ -60,7 +61,7 @@ func (w *waiter) Work() {
 	}
 }
 
-func (w *waiter) serveOrder(cookedOrder ReceivedOrd) {
+func (w *Waiter) serveOrder(cookedOrder ReceivedOrd) {
 
 	serveTime := time.Since(cookedOrder.PickUpTime)
 	//
@@ -74,8 +75,8 @@ func (w *waiter) serveOrder(cookedOrder ReceivedOrd) {
 
 	//freeing the table
 	MarkMutex.Lock()
-	markLength++
-	avg := calculateAverage(orderRaiting)
+	MarkLength++
+	avg := CalculateAverage(orderRaiting)
 	log.Println("-----Average is : ", avg, "-----")
 	MarkMutex.Unlock()
 
@@ -92,7 +93,7 @@ func (w *waiter) serveOrder(cookedOrder ReceivedOrd) {
 }
 
 // function to take table's order and prepare it for sending to kitchen
-func (w *waiter) takeOrder(tableId int) {
+func (w *Waiter) takeOrder(tableId int) {
 	//taking of order takes time
 	time.Sleep(TimeUnit * time.Duration(rand.Intn(8)+5))
 
@@ -110,7 +111,7 @@ func (w *waiter) takeOrder(tableId int) {
 }
 
 // function to send the order to kitchen using Post request
-func (w *waiter) sendOrder() {
+func (w *Waiter) sendOrder() {
 	reqBody, err := json.Marshal(w.takenOrder)
 	if err != nil {
 		log.Printf(err.Error())

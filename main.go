@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-
+	//log.SetOutput(io.Discard)
 	runtime.GOMAXPROCS(1)
 	rand.Seed(time.Now().UnixNano())
 	//TODO REGISTER RESTAURANT
@@ -31,6 +31,8 @@ func main() {
 
 	s := r.PathPrefix("/v2").Subrouter()
 	s.HandleFunc("/order", handlers.ReceiveOnlineOrder)
+	s.HandleFunc("/rating", handlers.ReceiveClientRating)
+	s.HandleFunc("/order/{id:[0-9]+}", handlers.SendOnlineOrderToClient)
 
 	//s.HandleFunc("/order/{id:[0-9]+}", handlers.ReceiveOnlineOrder)
 
