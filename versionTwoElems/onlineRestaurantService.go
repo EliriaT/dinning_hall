@@ -3,7 +3,7 @@ package versionTwoElems
 import (
 	"bytes"
 	"encoding/json"
-	dinning_hall_elem "github.com/EliriaT/dinning_hall/dinning-hall-elem"
+	"github.com/EliriaT/dinning_hall/dinning-hall-elem"
 	"io"
 	"log"
 	"net/http"
@@ -25,7 +25,7 @@ func CalculateEstimatedTime(currentOrder OnlineReceivedOrder, kitchenInform Kitc
 	B = kitchenInform.CooksProfficiency
 	D = kitchenInform.CookingApparatus
 	E = kitchenInform.NrFoodsQueue
-	F = len(foods)
+	F = len(currentOrder.Items)
 
 	estimatedTime = (A/B + C/D) * (E + F) / F
 	return estimatedTime
@@ -45,7 +45,7 @@ func SendOnlineOrder(receivedOrder OnlineReceivedOrder) KitchenInfo {
 	}
 	defer resp.Body.Close()
 
-	//receiving info from kitchen regarding foodQueue, apparatus, cooks profficiency
+	//receiving info from kitchen regarding foodQueue, apparatus, cooks profficiency,after the  online order is sent
 	var kitchenInform KitchenInfo
 
 	body, err := io.ReadAll(resp.Body)

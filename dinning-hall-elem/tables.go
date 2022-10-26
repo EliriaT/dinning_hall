@@ -1,7 +1,6 @@
 package dinning_hall_elem
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 )
@@ -22,7 +21,7 @@ func (t *Table) GenerateOrdersForever() {
 		time.Sleep(TimeUnit * time.Duration(rand.Intn(500)+30))
 		t.makeOrder()
 
-		fmt.Printf("Table %d generated order: %+v \n", t.Id, t.ClientOrder)
+		//fmt.Printf("Table %d generated order: %+v \n", t.Id, t.ClientOrder)
 	}
 
 }

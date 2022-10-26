@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	dinning_hall_elem "github.com/EliriaT/dinning_hall/dinning-hall-elem"
+	"github.com/EliriaT/dinning_hall/versionTwoElems"
 	"net/http"
 )
 
@@ -26,8 +27,16 @@ func ServeOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//the order received from kitchen
 	if cookedOrder.WaiterId == -1 {
-		dinning_hall_elem.OnlineCookedOrder = append(dinning_hall_elem.OnlineCookedOrder, cookedOrder)
+		order := versionTwoElems.OnlineCookedOrdersMap[cookedOrder.OrderId]
+		order.IsReady = true
+		order.EstimatedTime = 0
+		order.CookingTime = cookedOrder.CookingTime
+		order.CookingDetails = cookedOrder.CookingDetails
+		versionTwoElems.OnlineCookedOrdersMap[cookedOrder.OrderId] = order
+
+		//dinning_hall_elem.OnlineCookedOrder = append(dinning_hall_elem.OnlineCookedOrder, cookedOrder)
 	} else {
 		dinning_hall_elem.Waiters[cookedOrder.WaiterId-1].CookedOrdersChan <- cookedOrder
 
