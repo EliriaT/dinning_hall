@@ -1,0 +1,10 @@
+{
+  "my_address":"http://dinning-hall3:8090/",
+  "kitchen_address": "http://kitchen3:8092/",
+  "food_manager_address": "http://food-ordering:8084/",
+  "listenning_port": ":8090",
+  "resaurant_id": "3",
+  "restaurant_name":"TUMsushi",
+  "nr_tables": "6"
+
+}

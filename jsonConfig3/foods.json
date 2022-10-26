@@ -22,44 +22,53 @@
   },
   {
     "id": 4,
+    "name": "Scallop Sashimi with Meyer Lemon Confit",
+    "preparation-time": 32,
+    "complexity": 3,
+    "cooking-apparatus": null
+  },
+  {
+    "id": 5,
+    "name": "Waffles",
+    "preparation-time": 10,
+    "complexity": 1,
+    "cooking-apparatus": "stove"
+  },
+  {
+    "id": 6,
     "name": "Aubergine",
     "preparation-time": 20,
     "complexity": 2,
     "cooking-apparatus": null
   },
+
   {
-    "id": 5,
-    "name": "Lasagna",
-    "preparation-time": 30,
-    "complexity": 2,
+    "id": 7,
+    "name": "Burger",
+    "preparation-time": 15,
+    "complexity": 1,
     "cooking-apparatus": "oven"
   },
   {
-    "id": 6,
+    "id": 8,
     "name": "Gyros",
     "preparation-time": 15,
     "complexity": 1,
     "cooking-apparatus": null
   },
   {
-    "id": 7,
+    "id": 9,
     "name": "Kebab",
     "preparation-time": 15,
     "complexity": 1,
     "cooking-apparatus": null
   },
   {
-    "id": 8,
+    "id": 10,
     "name": "Unagi Maki",
     "preparation-time": 20,
     "complexity": 2,
     "cooking-apparatus": null
-  },
-  {
-    "id": 9,
-    "name": "Scallop Sashimi with Meyer Lemon Confit",
-    "preparation-time": 32,
-    "complexity": 3,
-    "cooking-apparatus": null
   }
+
 ]
